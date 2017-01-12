@@ -1,2 +1,3 @@
 # ED-1
-Companion App for Teenage Engineering devices
+
+nothing to see here for now...
