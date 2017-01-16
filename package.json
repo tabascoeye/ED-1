@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "fs-jetpack": "^0.10.2",
+    "wavesurfer.js": "^1.2.8",
     "webmidi": "2.0.0-rc.2"
   },
   "devDependencies": {
