@@ -5,9 +5,16 @@
 
 import path from 'path'
 import url from 'url'
-import { app, Menu } from 'electron';
-import { devMenuTemplate } from './menu/dev_menu_template';
-import { editMenuTemplate } from './menu/edit_menu_template';
+import {
+    app,
+    Menu
+} from 'electron';
+import {
+    devMenuTemplate
+} from './menu/dev_menu_template';
+import {
+    editMenuTemplate
+} from './menu/edit_menu_template';
 import createWindow from './helpers/window';
 
 // Special module holding environment variables which you declared
@@ -16,7 +23,7 @@ import env from './env';
 
 var mainWindow;
 
-var setApplicationMenu = function () {
+var setApplicationMenu = function() {
     var menus = [editMenuTemplate];
     if (env.name !== 'production') {
         menus.push(devMenuTemplate);
@@ -32,7 +39,7 @@ if (env.name !== 'production') {
     app.setPath('userData', userDataPath + ' (' + env.name + ')');
 }
 
-app.on('ready', function () {
+app.on('ready', function() {
     setApplicationMenu();
 
     var mainWindow = createWindow('main', {
@@ -49,12 +56,17 @@ app.on('ready', function () {
     if (env.name === 'development') {
         mainWindow.openDevTools();
     }
+    // Emitted when the window is closed.
+    mainWindow.on('closed', () => {
+        // Dereference the window object, usually you would store windows
+        // in an array if your app supports multi windows, this is the time
+        // when you should delete the corresponding element.
+        mainWindow = null
+    })
 });
 
 app.on('window-all-closed', () => {
-    if (process.platform !== 'darwin') {
         app.quit();
-    }
 });
 
 app.on('activate', () => {

@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', function() {
         waveColor: 'violet',
         progressColor: 'purple'
     });
-    wavesurfer.load('../sample_test.wav');
+    wavesurfer.load('sample_test.wav');
     wavesurfer.on('ready', function() {
         var timeline = Object.create(WaveSurfer.Timeline);
         timeline.init({
