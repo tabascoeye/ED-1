@@ -21,8 +21,6 @@ import createWindow from './helpers/window';
 // in config/env_xxx.json file.
 import env from './env';
 
-var mainWindow;
-
 var setApplicationMenu = function() {
     var menus = [editMenuTemplate];
     if (env.name !== 'production') {
@@ -67,10 +65,4 @@ app.on('ready', function() {
 
 app.on('window-all-closed', () => {
         app.quit();
-});
-
-app.on('activate', () => {
-    if (!mainWindow) {
-        mainWindow = createMainWindow();
-    }
 });

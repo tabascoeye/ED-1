@@ -18,30 +18,35 @@ var WebMidi = require('webmidi');
 global.WaveSurfer = require('wavesurfer.js');
 require('wavesurfer.js/plugin/wavesurfer.regions.js');
 require('wavesurfer.js/plugin/wavesurfer.timeline.js');
-var wavesurfer;
-var input = null;
+
 
 // Holy crap! This is browser window with HTML and stuff, but I can read
 // here files like it is node.js! Welcome to Electron world :)
 console.log('The author of this app is:', appDir.read('package.json', 'json').author);
 
 document.addEventListener('DOMContentLoaded', function() {
+    var domNotifications = require('dom-notifications');
+    var notifications = domNotifications();
+    document.body.appendChild(notifications.element());
     document.getElementById('greet').innerHTML = greet();
     document.getElementById('platform-info').innerHTML = os.platform();
     document.getElementById('env-name').innerHTML = env.name;
-    wavesurfer = WaveSurfer.create({
+    document.ondragover = document.ondrop = (e) => {
+        e.preventDefault()
+    }
+
+    document.body.ondrop = (e) => {
+        for (let f of e.dataTransfer.files) {
+            console.log('File(s) you dragged here: ', f.path)
+        }
+        e.preventDefault()
+    }
+    var wavesurfer = WaveSurfer.create({
         container: '#waveform',
         waveColor: 'violet',
         progressColor: 'purple'
     });
     wavesurfer.load('sample_test.wav');
-    wavesurfer.on('ready', function() {
-        var timeline = Object.create(WaveSurfer.Timeline);
-        timeline.init({
-            wavesurfer: wavesurfer,
-            container: '#waveform-timeline'
-        });
-    });
     wavesurfer.on('ready', function() {
         // Enable creating regions by dragging
         wavesurfer.enableDragSelection({});
@@ -72,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (err) {
             console.log("WebMidi could not be enabled.", err);
         }
-        input = WebMidi.getInputByName("OP-1 Midi Device");
+        var input = WebMidi.getInputByName("OP-1 Midi Device");
         if (input != false) {
             input.addListener('noteon', "all",
                 function(e) {
@@ -82,12 +87,15 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                     if (e.note.name == "F") {
                         wavesurfer.regions.list[0].play();
+                        console.log("note F played");
                     }
                     if (e.note.name == "G") {
                         wavesurfer.regions.list[1].play();
+                        console.log("note G played");
                     }
                     if (e.note.name == "A") {
                         wavesurfer.regions.list[2].play();
+                        console.log("note A played");
                     }
                     //wavesurfer.play();
                 });
@@ -100,8 +108,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
         }
         WebMidi.addListener('connected', function(e) {
-            console.log("connected MIDI device: " + e.name);
             if (e.name == "OP-1 Midi Device" && input == false) {
+                notifications.add({message: 'OP-1 connected'})
+                console.log("connected MIDI device: " + e.name);
                 input = WebMidi.getInputByName("OP-1 Midi Device");
                 input.addListener('noteon', "all",
                     function(e) {
